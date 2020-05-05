@@ -1,2 +1,18 @@
 ---
-# defaults file for restic
+restic_version: "0.9.6"
+
+restic_arch_map:
+  i386: '386'
+  x86_64: 'amd64'
+  aarch64: 'arm64'
+  armv7l: 'armv7'
+  armv6l: 'armv6'
+
+restic_arch: "{{ restic_arch_map[ansible_architecture] | default(ansible_architecture) }}"
+
+restic_runas: root
+
+restic_keep_schedule:
+  daily: 7
+  weekly: 5
+  monthly: 6

@@ -1,2 +1,63 @@
 ---
-# tasks file for restic
+
+- name: Set file name
+  set_fact:
+    restic_file_name: "restic_{{restic_version}}_{{ansible_system|lower}}_{{restic_arch}}.bz2"
+
+- name: Download archive
+  get_url:
+    url: "https://github.com/restic/restic/releases/download/v{{restic_version}}/{{restic_file_name}}"
+    dest: "/var/tmp/{{restic_file_name}}"
+    checksum: "sha256:https://github.com/restic/restic/releases/download/v{{ restic_version }}/SHA256SUMS"
+
+- name: Unpack restic
+  command: "bzip2 -dc /var/tmp/{{restic_file_name}} > /opt/restic"
+  args:
+    creates: /opt/restic
+
+- name: Change restic ownership, group and permissions
+  file:
+    path: /opt/restic
+    owner: root
+    mode: "0755"
+
+- name: Create backup scripts folder
+  file:
+    path: /root/backup-scripts
+    mode: 0700
+    state: directory
+    owner: "root"
+
+- name: Populate job defaults
+  set_fact:
+    restic_job_defaults:
+      password: "{{ restic_password }}"
+      runas: "{{ restic_runas }}"
+      keep_schedule:
+        daily: "{{ restic_keep_schedule.daily }}"
+        weekly: "{{ restic_keep_schedule.weekly }}"
+        monthly: "{{ restic_keep_schedule.monthly }}"
+
+- name: Propagate jobs with default values
+  set_fact:
+    restic_jobs_propagated: |
+      {{ restic_jobs_propagated | default([]) + [ restic_job_defaults | combine( job_item ) ] }}
+  loop: "{{ restic_jobs }}"
+  loop_control:
+    loop_var: job_item
+  no_log: true
+
+- name: Create backup scripts
+  template:
+    src: backup.sh.j2
+    dest: "/root/backup-scripts/rs-backup-{{ item.name }}.sh"
+    mode: 0700
+    owner: "root"
+  with_items: "{{ restic_jobs_propagated }}"
+
+- name: Create excludes
+  template:
+    src: exclude.txt.j2
+    dest: "/root/backup-scripts/{{ item.name }}-exclude.txt"
+  with_items: "{{ restic_jobs_propagated }}"
+  when: "'exclude' in item"
