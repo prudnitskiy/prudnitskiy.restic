@@ -1,0 +1,12 @@
+---
+galaxy_info:
+  role_name: restic
+  author: Paul Rudnitskiy <me@prudnitskiy.pro>
+  description: Restic backup service setup
+  company: Paul Rudnitskiy
+  issue_tracker_url: https://github.com/prudnitskiy/ansible-restic
+  license: Apache
+  min_ansible_version: 2.8
+  platforms: [{name: [EL], versions: [7]}]
+  galaxy_tags: backup, system
+dependencies: []
