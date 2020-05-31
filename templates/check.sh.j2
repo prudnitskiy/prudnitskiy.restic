@@ -1,0 +1,10 @@
+#!/bin/bash
+# backup check script {{ item.name }}
+{% if restic_global_pre %}{{ restic_global_pre }}{% endif %}
+
+export RESTIC_PASSWORD_COMMAND="{{ item.password_command | mandatory }}"
+export RESTIC_REPOSITORY="{{ item.dest }}"
+
+/opt/restic check
+
+{% if restic_global_post %}{{ restic_global_post }}{% endif %}

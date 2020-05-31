@@ -7,40 +7,74 @@ restic role
 ![Ansible](https://img.shields.io/ansible/role/d/role_id.svg)
 ![Ansible](https://img.shields.io/badge/dynamic/json.svg?label=min_ansible_version&url=https%3A%2F%2Fgalaxy.ansible.com%2Fapi%2Fv1%2Froles%2Frole_id%2F&query=$.min_ansible_version)
 
-A brief description of the role goes here.
+A role to install and configure [Restic](https://restic.readthedocs.io/en/latest/index.html).
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should
-be mentioned here. For instance, if the role uses the EC2 module, it may be a
-good idea to mention in this section that the boto package is required.
+There are no requirements for this role.
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including
-any variables that are in defaults/main.yml, vars/main.yml, and any variables
-that can/should be set via parameters to the role. Any variables that are read
-from other roles and/or the global scope (ie. hostvars, group vars, etc.) should
-be mentioned here as well.
+List of variables:
+* restic_version: version of app to download
+* restic_runas: default user to run the job. Can be altered in job definition (see below)
+* restic_keep_schedule: default schedule to keep snapshots. This schdule is default but can be altered per job (see below)
+** restic_keep_schedule.daily: how many daily snapshots to keep
+** restic_keep_schedule.weekly: how many weekly snapshots to keep
+** restic_keep_schedule.monthly: how many monthly snapshots to keep
+* restic_global_pre: global script executes before each backup script run
+* restic_global_post: global script executes after each backup script run
+* restic_jobs: jobs definition
+* restic_password: password to encrypt backup repository
+
+All of those variables (except restic_jobs) are optional and have reasonable defaults
+
+Job definition
+--------------
+
+To start backing up you need to define one or more jobs. Jobs parameters
+
+Required:
+* name: name of job
+* src: source to copy
+* dest: destination to copy. Playbook will init the repository on destination and create file `.{{name}}.initialized` in backup script folder.
+
+Optional parameters:
+* password: repository password (default is copied from `restic_password` variable)
+* exclude: list of files/paths to exclude. You can use relative or full paths here. GLOBs are also allowed
+* keep_schedule: schedule to keep images. This parameter overwrites default one but not combine! So if you set `keep_schedule.daily: 7` - you'll have only 7 daily snapshots.
+* job_pre: script to execute before backup process starts
+* job_post: script to execute after job ends (but before cleanup starts)
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in
-regards to parameters that may need to be set for other roles, or variables that
-are used from other roles.
+There are no depedencies for this role
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables
-passed in as parameters) is always nice for users too:
+Example to use restic with Amazon S3. You need to have an S3 bucket.
 
-    - hosts: servers
+    - name: restic test
+      hosts:
+        - srv.local
       roles:
-         - { role: restic, x: 42 }
+        - logan.restic
+      vars:
+        restic_password: "AAABBBCCCXXXYYYZZZ"
+        restic_global_pre: |
+          export AWS_ACCESS_KEY_ID="ABCDEFG"
+          export AWS_SECRET_ACCESS_KEY="ZYXWVUT"
+        restic_global_post: |
+          unset AWS_ACCESS_KEY_ID
+          unset AWS_SECRET_ACCESS_KEY
+        restic_jobs:
+        - name: etc
+          src: /etc
+          dest: "s3:https://s3.amazonaws.com/restic-demo/etc"
 
 License
 -------

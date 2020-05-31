@@ -10,9 +10,14 @@ restic_arch_map:
 
 restic_arch: "{{ restic_arch_map[ansible_architecture] | default(ansible_architecture) }}"
 
+restic_run_dir_prefix: "/root/backup-scripts"
 restic_runas: root
 
 restic_keep_schedule:
   daily: 7
   weekly: 5
   monthly: 6
+
+restic_run_schedule:
+  hour: 4
+  minute: 10
