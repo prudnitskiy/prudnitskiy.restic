@@ -2,16 +2,16 @@
 
 - name: Set file name
   set_fact:
-    restic_file_name: "restic_{{restic_version}}_{{ansible_system|lower}}_{{restic_arch}}.bz2"
+    restic_file_name: "restic_{{ restic_version }}_{{ ansible_system|lower }}_{{ restic_arch }}.bz2"
 
 - name: Download archive
   get_url:
-    url: "https://github.com/restic/restic/releases/download/v{{restic_version}}/{{restic_file_name}}"
-    dest: "/var/tmp/{{restic_file_name}}"
+    url: "https://github.com/restic/restic/releases/download/v{{ restic_version }}/{{ restic_file_name }}"
+    dest: "/var/tmp/{{ restic_file_name }}"
     checksum: "sha256:https://github.com/restic/restic/releases/download/v{{ restic_version }}/SHA256SUMS"
 
 - name: Unpack restic
-  shell: "bzip2 -dc /var/tmp/{{restic_file_name}} > /opt/restic"
+  shell: "bzip2 -dc /var/tmp/{{ restic_file_name }} > /opt/restic"
   args:
     creates: /opt/restic
 
@@ -25,7 +25,6 @@
   set_fact:
     restic_job_defaults:
       runas: "{{ restic_runas }}"
-      schedule: "{{ restic_run_schedule }}"
       keep_schedule:
         daily: "{{ restic_keep_schedule.daily }}"
         weekly: "{{ restic_keep_schedule.weekly }}"
@@ -38,7 +37,10 @@
         [
           restic_job_defaults |
           combine({'password_command': restic_password_command }) |
-          combine( item )
+          combine(item) |
+          combine({'schedule':
+            restic_run_schedule | combine( item.schedule | default({}) )
+          })
         ]
       }}
   loop: "{{ restic_jobs }}"
@@ -52,7 +54,7 @@
     mode: 0700
     state: directory
     owner: "{{ item.runas }}"
-  with_items: "{{ restic_jobs_propagated }}"
+  loop: "{{ restic_jobs_propagated }}"
 
 - name: Create backup scripts
   template:
@@ -60,7 +62,7 @@
     dest: "{{ restic_run_dir_prefix }}/rs-backup-{{ item.name }}.sh"
     mode: 0700
     owner: "{{ item.runas }}"
-  with_items: "{{ restic_jobs_propagated }}"
+  loop: "{{ restic_jobs_propagated }}"
 
 - name: Create check scripts
   template:
@@ -68,7 +70,7 @@
     dest: "{{ restic_run_dir_prefix }}/rs-check-{{ item.name }}.sh"
     mode: 0700
     owner: "root"
-  with_items: "{{ restic_jobs_propagated }}"
+  loop: "{{ restic_jobs_propagated }}"
 
 - name: Create init scripts
   template:
@@ -76,13 +78,13 @@
     dest: "{{ restic_run_dir_prefix }}/rs-init-{{ item.name }}.sh"
     mode: 0700
     owner: "root"
-  with_items: "{{ restic_jobs_propagated }}"
+  loop: "{{ restic_jobs_propagated }}"
 
 - name: Create excludes
   template:
     src: exclude.txt.j2
     dest: "{{ restic_run_dir_prefix }}/{{ item.name }}-exclude.txt"
-  with_items: "{{ restic_jobs_propagated }}"
+  loop: "{{ restic_jobs_propagated }}"
   when: "'exclude' in item"
 
 - name: Initialize repo
@@ -91,15 +93,16 @@
     creates: "{{ restic_run_dir_prefix }}/.{{ item.name }}.initialized"
   register: rs_init
   failed_when: rs_init.rc >= 2
-  with_items: "{{ restic_jobs_propagated }}"
+  when: not restic_manual_init
+  loop: "{{ restic_jobs_propagated }}"
 
 - name: create crontabs
   cron:
     name: "restic backup: {{ item.name }}"
     job: "{{ restic_run_dir_prefix }}/rs-backup-{{ item.name }}.sh"
-    day: "{{ item.schedule.day | default('*') }}"
-    weekday: "{{ item.schedule.weekday | default('*') }}"
-    hour: "{{ item.schedule.hour | default( restic_schedule_defaults.hour ) }}"
-    minute: "{{ item.schedule.minute | default( restic_schedule_defaults.minute )}}"
+    day: "{{ item.schedule.day }}"
+    weekday: "{{ item.schedule.weekday }}"
+    hour: "{{ item.schedule.hour }}"
+    minute: "{{ item.schedule.minute }}"
     user: "{{ item.runas }}"
   loop: "{{ restic_jobs_propagated }}"

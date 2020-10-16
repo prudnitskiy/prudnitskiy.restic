@@ -21,3 +21,7 @@ restic_keep_schedule:
 restic_run_schedule:
   hour: 4
   minute: 10
+  day: "*"
+  weekday: "*"
+
+restic_manual_init: False
