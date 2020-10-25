@@ -7,17 +7,25 @@
 export RESTIC_PASSWORD_COMMAND="{{ item.password_command | mandatory }}"
 export RESTIC_REPOSITORY="{{ item.dest }}"
 
+if [ ! -f "{{ restic_run_dir_prefix }}/.{{ item.name }}.initialized" ]; then
+    echo "going to init repo"
+    /opt/restic init
+    touch {{ restic_run_dir_prefix }}/.{{ item.name }}.initialized
+fi
+
 {% if 'job_pre' in item %}
 {{ item.job_pre }}
 
 {% endif %}
-/opt/restic backup {% if 'exclude' in item %}--exclude-file=/root/backup-scripts/{{ item.name }}-exclude.txt {% endif %} {{ item.src }}
+/opt/restic backup {% if 'exclude' in item %}--exclude-file={{ restic_run_dir_prefix }}/{{ item.name }}-exclude.txt {% endif %} {{ item.src }}
 {% if 'job_post' in item %}
 {{ item.job_post }}
 
 {% endif %}
 
 /opt/restic forget --prune{% if 'daily' in item.keep_schedule %} --keep-daily {{ item.keep_schedule.daily }}{% endif %}{% if 'weekly' in item.keep_schedule %} --keep-weekly {{ item.keep_schedule.weekly }}{% endif %}{% if 'monthly' in item.keep_schedule %} --keep-monthly {{ item.keep_schedule.monthly }}{% endif %}
+
+/opt/restic check
 
 {% if restic_global_post %}
 {{ restic_global_post }}

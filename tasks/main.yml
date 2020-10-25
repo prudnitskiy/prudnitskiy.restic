@@ -64,37 +64,14 @@
     owner: "{{ item.runas }}"
   loop: "{{ restic_jobs_propagated }}"
 
-- name: Create check scripts
-  template:
-    src: check.sh.j2
-    dest: "{{ restic_run_dir_prefix }}/rs-check-{{ item.name }}.sh"
-    mode: 0700
-    owner: "root"
-  loop: "{{ restic_jobs_propagated }}"
-
-- name: Create init scripts
-  template:
-    src: init.sh.j2
-    dest: "{{ restic_run_dir_prefix }}/rs-init-{{ item.name }}.sh"
-    mode: 0700
-    owner: "root"
-  loop: "{{ restic_jobs_propagated }}"
-
 - name: Create excludes
   template:
     src: exclude.txt.j2
     dest: "{{ restic_run_dir_prefix }}/{{ item.name }}-exclude.txt"
+    mode: 0600
+    owner: "{{ item.runas }}"
   loop: "{{ restic_jobs_propagated }}"
   when: "'exclude' in item"
-
-- name: Initialize repo
-  shell: "{{ restic_run_dir_prefix }}/rs-init-{{ item.name }}.sh"
-  args:
-    creates: "{{ restic_run_dir_prefix }}/.{{ item.name }}.initialized"
-  register: rs_init
-  failed_when: rs_init.rc >= 2
-  when: not restic_manual_init
-  loop: "{{ restic_jobs_propagated }}"
 
 - name: create crontabs
   cron:
