@@ -20,15 +20,14 @@ Role Variables
 List of variables:
 * restic_version: version of app to download
 * restic_runas: default user to run the job. Can be altered in job definition (see below)
-* restic_keep_schedule: default schedule to keep snapshots. This schdule is default but can be altered per job (see below)
-** restic_keep_schedule.daily: how many daily snapshots to keep
-** restic_keep_schedule.weekly: how many weekly snapshots to keep
-** restic_keep_schedule.monthly: how many monthly snapshots to keep
 * restic_global_pre: global script executes before each backup script run
 * restic_global_post: global script executes after each backup script run
 * restic_jobs: jobs definition
 * restic_password: password to encrypt backup repository
-
+* restic_keep_schedule: default schedule to keep snapshots. This schdule is default but can be altered per job (see below). Additional fields:
+* restic_keep_schedule.daily: how many daily snapshots to keep
+* restic_keep_schedule.weekly: how many weekly snapshots to keep
+* restic_keep_schedule.monthly: how many monthly snapshots to keep
 All of those variables (except restic_jobs) are optional and have reasonable defaults
 
 Job definition
