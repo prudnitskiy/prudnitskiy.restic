@@ -5,7 +5,7 @@ restic role
 [![Build Status](https://gitlab.com/lean-delivery/ansible-role-restic/badges/master/pipeline.svg)](https://gitlab.com/lean-delivery/ansible-role-restic/pipelines)
 [![Galaxy](https://img.shields.io/badge/galaxy-lean__delivery.restic-blue.svg)](https://galaxy.ansible.com/lean_delivery/restic)
 ![Ansible](https://img.shields.io/ansible/role/d/role_id.svg)
-![Ansible](https://img.shields.io/badge/dynamic/json.svg?label=min_ansible_version&url=https%3A%2F%2Fgalaxy.ansible.com%2Fapi%2Fv1%2Froles%2Frole_id%2F&query=$.min_ansible_version)
+![Ansible](https://img.shields.io/badge/dynamic/json.svg?label=min_ansible_version&url=https%3A%2F%2Fgalaxy.ansible.com%2Fapi%2Fv1%2Froles%2Frole_id%2F&query=2.8)
 
 A role to install and configure [Restic](https://restic.readthedocs.io/en/latest/index.html).
 
@@ -61,7 +61,7 @@ Example to use restic with Amazon S3. You need to have an S3 bucket.
       hosts:
         - srv.local
       roles:
-        - logan.restic
+        - prudnitskiy.restic
       vars:
         restic_password: "AAABBBCCCXXXYYYZZZ"
         restic_global_pre: |
