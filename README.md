@@ -1,11 +1,10 @@
 restic role
 =========
-[![License](https://img.shields.io/badge/license-Apache-green.svg?style=flat)](https://raw.githubusercontent.com/lean-delivery/ansible-role-restic/master/LICENSE)
-[![Build Status](https://travis-ci.org/lean-delivery/ansible-role-restic.svg?branch=master)](https://travis-ci.org/lean-delivery/ansible-role-restic)
-[![Build Status](https://gitlab.com/lean-delivery/ansible-role-restic/badges/master/pipeline.svg)](https://gitlab.com/lean-delivery/ansible-role-restic/pipelines)
+[![License](https://img.shields.io/badge/license-Apache-green.svg?style=flat)](https://raw.githubusercontent.com/prudnitskiy/prudnitskiy.restic/master/LICENSE)
+[![Build Status](https://travis-ci.org/prudnitskiy/prudnitskiy.restic.svg?branch=master)](https://travis-ci.org/prudnitskiy/prudnitskiy.restic)
 [![Galaxy](https://img.shields.io/badge/galaxy-lean__delivery.restic-blue.svg)](https://galaxy.ansible.com/lean_delivery/restic)
 ![Ansible](https://img.shields.io/ansible/role/d/role_id.svg)
-![Ansible](https://img.shields.io/badge/dynamic/json.svg?label=min_ansible_version&url=https%3A%2F%2Fgalaxy.ansible.com%2Fapi%2Fv1%2Froles%2Frole_id%2F&query=2.8)
+![Ansible](https://img.shields.io/badge/dynamic/json.svg?label=min_ansible_version&url=https%3A%2F%2Fgalaxy.ansible.com%2Fapi%2Fv1%2Froles%2Frole_id%2F&query=$.min_ansible_version)
 
 A role to install and configure [Restic](https://restic.readthedocs.io/en/latest/index.html).
 
