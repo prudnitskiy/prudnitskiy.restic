@@ -1,7 +1,7 @@
 Restic role
 =========
 [![License](https://img.shields.io/badge/license-Apache-green.svg?style=flat)](https://raw.githubusercontent.com/prudnitskiy/prudnitskiy.restic/master/LICENSE)
-[![Build Status](https://travis-ci.org/prudnitskiy/prudnitskiy_restic.svg?branch=master)](https://travis-ci.org/prudnitskiy/prudnitskiy.restic)
+[![Build Status](https://travis-ci.org/prudnitskiy/prudnitskiy.restic.svg?branch=main)](https://travis-ci.org/prudnitskiy/prudnitskiy.restic)
 [![Galaxy](https://img.shields.io/badge/galaxy-prudnitskiy_restic-blue.svg)](https://galaxy.ansible.com/prudnitskiy/restic)
 ![Ansible](https://img.shields.io/ansible/role/d/51489.svg)
 ![Ansible](https://img.shields.io/badge/dynamic/json.svg?label=min_ansible_version&url=https%3A%2F%2Fgalaxy.ansible.com%2Fapi%2Fv1%2Froles%2F51489%2F&query=$.min_ansible_version)
