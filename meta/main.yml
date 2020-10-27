@@ -23,5 +23,7 @@ galaxy_info:
     - name: 'EL'
       versions:
         - '7'
-  galaxy_tags: backup, system
+  galaxy_tags:
+    backup
+    system
 dependencies: []
